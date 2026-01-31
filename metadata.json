@@ -1,0 +1,8 @@
+{
+  "name": "Sawtify Pro - Advanced Media Player",
+  "description": "A feature-rich media player for MP3 and MP4 files with skip silence, noise reduction, and custom playback speed controls.",
+  "requestFramePermissions": [
+    "microphone",
+    "display-capture"
+  ]
+}

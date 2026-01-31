@@ -1,0 +1,31 @@
+
+{
+  "name": "Sawtify Pro",
+  "short_name": "Sawtify",
+  "description": "Advanced Media Player by Ahmed Magdy",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#2563eb",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/727/727218.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "share_target": {
+    "action": "./",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "files": [
+        {
+          "name": "mediaFiles",
+          "accept": ["audio/*", "video/*"]
+        }
+      ]
+    }
+  }
+}
