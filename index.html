@@ -1,428 +1,574 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎵 Sawtify Pro - مشغل الوسائط المتقدم</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
-
+    <title>Audio Studio Pro - Redesign</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;600;700&display=swap');
+        
+        :root {
+            --accent: #6366f1;
+            --accent-glow: rgba(99, 102, 241, 0.4);
+            --bg-dark: #020617;
+            --card-bg: rgba(15, 23, 42, 0.8);
         }
 
-        body {
-            font-family: 'Cairo', 'Inter', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
+        body { 
+            font-family: 'IBM Plex Sans Arabic', sans-serif;
+            background-color: var(--bg-dark);
+            color: #f8fafc;
         }
 
-        .container {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
+        .studio-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 24px;
-            padding: 40px;
-            max-width: 800px;
-            width: 100%;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-        }
-
-        h1 {
-            color: #667eea;
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            text-align: center;
-        }
-
-        .subtitle {
-            text-align: center;
-            color: #666;
-            margin-bottom: 30px;
-            font-size: 1.1rem;
-        }
-
-        .upload-area {
-            border: 3px dashed #667eea;
-            border-radius: 16px;
-            padding: 60px 20px;
-            text-align: center;
-            cursor: pointer;
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
             transition: all 0.3s ease;
-            margin-bottom: 30px;
         }
 
-        .upload-area:hover {
-            background: rgba(102, 126, 234, 0.05);
-            border-color: #764ba2;
+        .studio-card:hover {
+            border-color: rgba(99, 102, 241, 0.3);
+            box-shadow: 0 15px 40px -10px rgba(99, 102, 241, 0.1);
         }
 
-        .upload-area.dragover {
-            background: rgba(102, 126, 234, 0.1);
-            border-color: #764ba2;
-            transform: scale(1.02);
+        .active-glow {
+            box-shadow: 0 0 20px var(--accent-glow);
+            border-color: var(--accent) !important;
         }
 
-        .upload-icon {
-            font-size: 4rem;
-            margin-bottom: 20px;
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+        
+        input[type=range] {
+            -webkit-appearance: none;
+            background: #1e293b;
+            height: 6px;
+            border-radius: 5px;
         }
 
-        .upload-text {
-            font-size: 1.2rem;
-            color: #333;
-            margin-bottom: 10px;
-        }
-
-        .upload-hint {
-            color: #999;
-            font-size: 0.9rem;
-        }
-
-        input[type="file"] {
-            display: none;
-        }
-
-        .player-container {
-            display: none;
-            margin-top: 30px;
-        }
-
-        .player-container.active {
-            display: block;
-        }
-
-        video,
-        audio {
-            width: 100%;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        }
-
-        .controls {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
-        }
-
-        button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            font-family: 'Cairo', sans-serif;
-        }
-
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        button:active {
-            transform: translateY(0);
-        }
-
-        .speed-control {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .speed-control label {
-            color: #333;
-            font-weight: 600;
-        }
-
-        select,
-        input[type="range"] {
-            padding: 8px 12px;
-            border: 2px solid #667eea;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-family: 'Cairo', sans-serif;
-        }
-
-        .file-info {
-            background: rgba(102, 126, 234, 0.1);
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-
-        .file-info h3 {
-            color: #667eea;
-            margin-bottom: 10px;
-        }
-
-        .file-info p {
-            color: #666;
-            margin: 5px 0;
-        }
-
-        .playlist {
-            margin-top: 20px;
-        }
-
-        .playlist-item {
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 18px;
+            width: 18px;
+            border-radius: 50%;
             background: white;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 10px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
+            box-shadow: 0 0 10px var(--accent-glow);
+            border: 2px solid var(--accent);
         }
 
-        .playlist-item:hover {
-            border-color: #667eea;
-            transform: translateX(-5px);
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .playlist-item.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.5);
         }
 
-        @media (max-width: 600px) {
-            .container {
-                padding: 20px;
-            }
-
-            h1 {
-                font-size: 2rem;
-            }
-
-            .controls {
-                flex-direction: column;
-            }
-
-            button {
-                width: 100%;
-            }
+        .visualizer-bar {
+            transition: height 0.05s ease;
         }
     </style>
 </head>
+<body class="h-screen overflow-hidden">
 
-<body>
-    <div class="container">
-        <h1>🎵 Sawtify Pro</h1>
-        <p class="subtitle">مشغل الوسائط المتقدم - ارفع ملفات الصوت والفيديو</p>
-
-        <div class="upload-area" id="uploadArea">
-            <div class="upload-icon">📁</div>
-            <div class="upload-text">اضغط هنا أو اسحب الملفات</div>
-            <div class="upload-hint">يدعم الصوت والفيديو (MP3, MP4, WAV, WebM, وغيرها)</div>
-            <input type="file" id="fileInput" accept="audio/*,video/*" multiple>
-        </div>
-
-        <div class="player-container" id="playerContainer">
-            <div class="file-info" id="fileInfo"></div>
-
-            <div id="mediaContainer"></div>
-
-            <div class="controls">
-                <button onclick="playPause()">▶️ تشغيل/إيقاف</button>
-                <button onclick="skipBackward()">⏪ رجوع 10 ثواني</button>
-                <button onclick="skipForward()">⏩ تقدم 10 ثواني</button>
-                <button onclick="toggleMute()">🔊 كتم الصوت</button>
+    <!-- نظام التنبيهات المطور -->
+    <div id="notification" class="fixed top-6 left-1/2 -translate-x-1/2 z-[100] opacity-0 pointer-events-none transition-all duration-500 transform -translate-y-4">
+        <div class="flex items-center gap-4 px-6 py-4 rounded-2xl studio-card border-indigo-500/50 bg-indigo-950/90 shadow-2xl">
+            <div class="bg-indigo-500/20 p-2 rounded-full">
+                <i data-lucide="bell" class="w-5 h-5 text-indigo-400"></i>
             </div>
-
-            <div class="speed-control">
-                <label>السرعة:</label>
-                <select id="speedSelect" onchange="changeSpeed()">
-                    <option value="0.5">0.5x</option>
-                    <option value="0.75">0.75x</option>
-                    <option value="1" selected>1x (عادي)</option>
-                    <option value="1.25">1.25x</option>
-                    <option value="1.5">1.5x</option>
-                    <option value="1.75">1.75x</option>
-                    <option value="2">2x</option>
-                </select>
-            </div>
-
-            <div class="speed-control">
-                <label>مستوى الصوت:</label>
-                <input type="range" id="volumeSlider" min="0" max="100" value="80" oninput="changeVolume()">
-                <span id="volumeValue">80%</span>
-            </div>
-
-            <div class="playlist" id="playlist"></div>
+            <span id="notification-text" class="text-sm font-bold"></span>
         </div>
     </div>
 
+    <div class="flex h-full p-4 gap-4">
+        
+        <!-- Sidebar - قائمة الملفات -->
+        <aside class="w-80 flex flex-col gap-4 shrink-0">
+            <div class="studio-card p-6 flex flex-col gap-6 h-full">
+                <div class="flex items-center gap-3">
+                    <div class="bg-indigo-600 p-2.5 rounded-xl shadow-lg rotate-3">
+                        <i data-lucide="layout-grid" class="w-6 h-6 text-white"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-black tracking-tighter text-white">STUDIO PRO</h1>
+                        <p class="text-[10px] text-indigo-400 font-bold uppercase tracking-widest">Master Engine v2.5</p>
+                    </div>
+                </div>
+
+                <label class="group relative flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-slate-700 rounded-3xl cursor-pointer hover:border-indigo-500/50 hover:bg-indigo-500/5 transition-all">
+                    <div class="flex flex-col items-center justify-center">
+                        <i data-lucide="cloud-upload" class="w-8 h-8 text-slate-500 group-hover:text-indigo-400 transition-colors mb-2"></i>
+                        <span class="text-xs font-bold text-slate-500 uppercase tracking-tighter">استيراد ملفات جديدة</span>
+                    </div>
+                    <input type="file" id="file-input" multiple class="hidden" accept="audio/*,video/*">
+                </label>
+
+                <div id="file-list" class="flex-1 overflow-y-auto custom-scrollbar space-y-3">
+                    <!-- الملفات هنا -->
+                </div>
+
+                <button id="record-btn" class="btn-primary w-full py-4 rounded-2xl flex items-center justify-center gap-3 font-bold text-sm text-white">
+                    <i data-lucide="video" class="w-5 h-5"></i>
+                    تسجيل الشاشة المفلتر
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Workspace -->
+        <main class="flex-1 flex flex-col gap-4 min-w-0">
+            
+            <!-- Player & Visualizer Section -->
+            <section class="flex-1 studio-card relative overflow-hidden flex flex-col p-6">
+                <!-- Status Badge -->
+                <div class="absolute top-6 left-6 z-20 flex items-center gap-2 px-4 py-2 rounded-full bg-slate-950/80 border border-white/5 backdrop-blur-md">
+                    <div id="status-dot" class="w-2 h-2 rounded-full bg-slate-500"></div>
+                    <span id="status-text" class="text-[10px] font-black uppercase tracking-widest">المحرك في وضع الاستعداد</span>
+                </div>
+
+                <!-- Skipping Indicator -->
+                <div id="skipping-badge" class="absolute top-6 right-6 z-20 hidden flex items-center gap-2 bg-rose-600 text-white px-4 py-2 rounded-full font-bold text-xs animate-pulse shadow-lg">
+                    <i data-lucide="zap" class="w-4 h-4 fill-white"></i> تخطي الصمت فعال
+                </div>
+
+                <!-- Media Content -->
+                <div class="flex-1 flex flex-col items-center justify-center relative">
+                    <div id="empty-state" class="text-center group">
+                        <div class="w-24 h-24 bg-slate-900 rounded-[2.5rem] border border-white/5 flex items-center justify-center mx-auto transition-transform group-hover:scale-110 duration-500 mb-6 shadow-2xl">
+                            <i data-lucide="music-4" class="w-10 h-10 text-indigo-500"></i>
+                        </div>
+                        <h2 class="text-2xl font-black mb-2">منطقة المعالجة</h2>
+                        <p class="text-slate-500 text-sm max-w-xs mx-auto">ارفع ملفاً صوتياً أو فيديو لتفعيل المحرك الصوتي الاحترافي.</p>
+                    </div>
+
+                    <div id="player-container" class="w-full h-full hidden flex flex-col items-center justify-center">
+                        <video id="main-video" class="max-w-full max-h-[70%] rounded-3xl shadow-2xl border border-white/5 hidden"></video>
+                        <div id="audio-ui" class="flex flex-col items-center justify-center gap-6">
+                            <div class="relative">
+                                <div class="absolute inset-0 bg-indigo-500 blur-[80px] opacity-20 animate-pulse"></div>
+                                <div id="visualizer-circle" class="w-48 h-48 bg-slate-900/50 rounded-full border-2 border-white/10 flex items-center justify-center backdrop-blur-3xl relative">
+                                    <i data-lucide="mic-2" class="w-16 h-16 text-indigo-400"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Dynamic Wave Visualizer -->
+                    <canvas id="visualizer-canvas" class="absolute bottom-0 left-0 w-full h-48 opacity-50 pointer-events-none"></canvas>
+                </div>
+            </section>
+
+            <!-- Bottom Controls & DSP Panel -->
+            <section class="h-64 flex gap-4">
+                <!-- Control Bento Card -->
+                <div class="flex-1 studio-card p-8 flex flex-col justify-between">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-6">
+                            <!-- التراجع 3 ثواني -->
+                            <button id="rewind-btn" class="text-slate-400 hover:text-white transition-colors active:scale-90"><i data-lucide="rewind" class="w-6 h-6"></i></button>
+                            <button id="play-pause-btn" class="w-20 h-20 rounded-full bg-white text-slate-950 flex items-center justify-center hover:scale-110 active:scale-95 transition-all shadow-2xl">
+                                <i data-lucide="play" class="w-8 h-8 fill-current ml-1"></i>
+                            </button>
+                            <!-- التقديم 3 ثواني -->
+                            <button id="forward-btn" class="text-slate-400 hover:text-white transition-colors active:scale-90"><i data-lucide="fast-forward" class="w-6 h-6"></i></button>
+                        </div>
+                        
+                        <div class="flex-1 max-w-md px-10">
+                            <div class="flex justify-between text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-3">
+                                <span id="time-current">00:00</span>
+                                <span id="time-duration">00:00</span>
+                            </div>
+                            <div id="progress-container" class="h-2 bg-slate-800 rounded-full relative cursor-pointer overflow-hidden">
+                                <div id="progress-bar" class="absolute h-full bg-gradient-to-r from-indigo-500 to-purple-500 shadow-[0_0_15px_var(--accent-glow)] w-0"></div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-4">
+                            <i data-lucide="volume-2" class="w-5 h-5 text-slate-500"></i>
+                            <input type="range" id="volume-slider" class="w-32" value="100">
+                        </div>
+                    </div>
+
+                    <!-- Skip Logic Card -->
+                    <div class="flex items-center justify-between bg-slate-900/40 p-4 rounded-[2rem] border border-white/5">
+                        <div class="flex items-center gap-4">
+                            <div class="bg-indigo-500/10 p-2 rounded-xl text-indigo-400">
+                                <i data-lucide="zap" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-black uppercase tracking-widest text-white">تخطي الصمت الذكي (المطور)</h4>
+                                <p class="text-[10px] text-slate-500">منطق قفز جراحي (0.05s) للحفاظ على مخارج الحروف السريعة</p>
+                            </div>
+                        </div>
+                        <button onclick="toggleSilenceSkip()" id="skip-btn" class="flex items-center gap-3 px-6 py-3 rounded-xl bg-slate-800 border border-white/5 hover:bg-slate-700 transition-all font-bold text-xs uppercase">
+                            <span class="text-slate-400">غير نشط</span>
+                            <div class="w-3 h-3 rounded-full bg-slate-600 shadow-[0_0_8px_rgba(0,0,0,0.5)]"></div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- DSP Settings Card -->
+                <div class="w-80 studio-card p-6 flex flex-col gap-4">
+                    <h3 class="text-xs font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                        <i data-lucide="settings-2" class="w-4 h-4"></i> معالجة الإشارة الرقمية
+                    </h3>
+                    
+                    <div class="space-y-2 flex-1">
+                        <button onclick="toggleFilter('noiseReduction')" id="filter-noise" class="w-full flex items-center justify-between p-3 rounded-xl bg-slate-900/50 border border-white/5 transition-all">
+                            <span class="text-xs font-bold flex items-center gap-2 text-emerald-400"><i data-lucide="shield" class="w-4 h-4"></i> عزل الضوضاء</span>
+                            <div class="dot w-1.5 h-1.5 rounded-full bg-indigo-500"></div>
+                        </button>
+                        <button onclick="toggleFilter('speechClarity')" id="filter-clarity" class="w-full flex items-center justify-between p-3 rounded-xl bg-slate-900/50 border border-white/5 transition-all">
+                            <span class="text-xs font-bold flex items-center gap-2 text-amber-400"><i data-lucide="sparkles" class="w-4 h-4"></i> وضوح الكلام</span>
+                            <div class="dot w-1.5 h-1.5 rounded-full bg-indigo-500"></div>
+                        </button>
+                        <button onclick="toggleFilter('compression')" id="filter-comp" class="w-full flex items-center justify-between p-3 rounded-xl bg-slate-900/50 border border-white/5 transition-all">
+                            <span class="text-xs font-bold flex items-center gap-2 text-sky-400"><i data-lucide="activity" class="w-4 h-4"></i> الضاغط الآلي</span>
+                            <div class="dot w-1.5 h-1.5 rounded-full bg-indigo-500"></div>
+                        </button>
+                    </div>
+
+                    <div class="flex flex-col gap-1">
+                        <div class="flex justify-between text-[10px] font-bold text-slate-500 uppercase px-1">
+                            <span>سرعة التشغيل</span>
+                            <span id="speed-val" class="text-indigo-400 font-mono">1.00x</span>
+                        </div>
+                        <!-- تحديث الخطوات step="0.05" للتحكم بالكسور -->
+                        <input type="range" id="speed-slider" min="0.5" max="3" step="0.05" value="1" class="w-full">
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
     <script>
-        let currentMedia = null;
+        // --- State Management ---
         let files = [];
-        let currentIndex = 0;
+        let currentIndex = null;
+        let isPlaying = false;
+        let isSkipSilenceEnabled = false;
+        let isRecording = false;
+        let playbackRate = 1.0;
+        let filters = { noiseReduction: true, speechClarity: true, compression: true };
 
-        const uploadArea = document.getElementById('uploadArea');
-        const fileInput = document.getElementById('fileInput');
-        const playerContainer = document.getElementById('playerContainer');
-        const mediaContainer = document.getElementById('mediaContainer');
-        const fileInfo = document.getElementById('fileInfo');
-        const playlist = document.getElementById('playlist');
+        // --- Audio Context Variables ---
+        let audioCtx, source, analyser, streamDest;
+        let highPass, lowPass, peaking, compressor;
 
-        // Upload area click
-        uploadArea.addEventListener('click', () => fileInput.click());
+        // Elements
+        const video = document.getElementById('main-video');
+        const fileList = document.getElementById('file-list');
+        const playBtn = document.getElementById('play-pause-btn');
+        const skipBtn = document.getElementById('skip-btn');
+        const speedSlider = document.getElementById('speed-slider');
+        const progressBar = document.getElementById('progress-bar');
+        const canvas = document.getElementById('visualizer-canvas');
+        const ctx = canvas.getContext('2d');
+        const rewindBtn = document.getElementById('rewind-btn');
+        const forwardBtn = document.getElementById('forward-btn');
 
-        // File input change
-        fileInput.addEventListener('change', (e) => {
-            handleFiles(e.target.files);
-        });
+        lucide.createIcons();
 
-        // Drag and drop
-        uploadArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadArea.classList.add('dragover');
-        });
+        // --- Initializing Audio Engine ---
+        async function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                analyser = audioCtx.createAnalyser();
+                analyser.fftSize = 512;
+                streamDest = audioCtx.createMediaStreamDestination();
+                
+                source = audioCtx.createMediaElementSource(video);
 
-        uploadArea.addEventListener('dragleave', () => {
-            uploadArea.classList.remove('dragover');
-        });
+                highPass = audioCtx.createBiquadFilter();
+                highPass.type = 'highpass';
+                
+                lowPass = audioCtx.createBiquadFilter();
+                lowPass.type = 'lowpass';
+                lowPass.frequency.value = 10000;
 
-        uploadArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadArea.classList.remove('dragover');
-            handleFiles(e.dataTransfer.files);
-        });
+                peaking = audioCtx.createBiquadFilter();
+                peaking.type = 'peaking';
+                peaking.frequency.value = 3200;
 
-        function handleFiles(fileList) {
-            files = Array.from(fileList);
-            if (files.length > 0) {
-                loadFile(0);
-                renderPlaylist();
-                playerContainer.classList.add('active');
+                compressor = audioCtx.createDynamicsCompressor();
+                compressor.threshold.setValueAtTime(-24, audioCtx.currentTime);
+
+                source.connect(highPass);
+                highPass.connect(lowPass);
+                lowPass.connect(peaking);
+                peaking.connect(compressor);
+                compressor.connect(analyser);
+                analyser.connect(audioCtx.destination);
+                analyser.connect(streamDest);
             }
+            if (audioCtx.state === 'suspended') await audioCtx.resume();
+            updateFiltersUI();
         }
 
-        function loadFile(index) {
-            currentIndex = index;
-            const file = files[index];
-            const url = URL.createObjectURL(file);
-            const isVideo = file.type.startsWith('video');
+        function updateFiltersUI() {
+            if (!audioCtx) return;
+            highPass.frequency.value = filters.noiseReduction ? 100 : 0;
+            peaking.gain.value = filters.speechClarity ? 10 : 0;
+            compressor.ratio.value = filters.compression ? 12 : 1;
 
-            // Create media element
-            mediaContainer.innerHTML = '';
-            currentMedia = document.createElement(isVideo ? 'video' : 'audio');
-            currentMedia.src = url;
-            currentMedia.controls = true;
-            currentMedia.volume = 0.8;
-            mediaContainer.appendChild(currentMedia);
-
-            // Update file info
-            const sizeInMB = (file.size / (1024 * 1024)).toFixed(2);
-            fileInfo.innerHTML = `
-                <h3>📄 ${file.name}</h3>
-                <p>النوع: ${isVideo ? 'فيديو' : 'صوت'}</p>
-                <p>الحجم: ${sizeInMB} ميجابايت</p>
-            `;
-
-            // Auto play next
-            currentMedia.addEventListener('ended', () => {
-                if (currentIndex < files.length - 1) {
-                    loadFile(currentIndex + 1);
-                    currentMedia.play();
+            ['noise', 'clarity', 'comp'].forEach(k => {
+                const el = document.getElementById(`filter-${k}`);
+                const dot = el.querySelector('.dot');
+                const key = k === 'noise' ? 'noiseReduction' : k === 'clarity' ? 'speechClarity' : 'compression';
+                
+                if (filters[key]) {
+                    el.classList.add('bg-white/5', 'border-white/20');
+                    dot.classList.add('bg-indigo-500', 'shadow-[0_0_8px_#6366f1]');
+                } else {
+                    el.classList.remove('bg-white/5', 'border-white/20');
+                    dot.classList.remove('bg-indigo-500', 'shadow-[0_0_8px_#6366f1]');
+                    dot.classList.add('bg-slate-700');
                 }
             });
-
-            updatePlaylistUI();
         }
 
-        function renderPlaylist() {
-            playlist.innerHTML = '<h3 style="color: #667eea; margin-bottom: 15px;">📋 قائمة التشغيل</h3>';
-            files.forEach((file, index) => {
-                const item = document.createElement('div');
-                item.className = 'playlist-item';
-                item.textContent = `${index + 1}. ${file.name}`;
-                item.onclick = () => loadFile(index);
-                playlist.appendChild(item);
-            });
-            updatePlaylistUI();
+        function toggleFilter(key) {
+            filters[key] = !filters[key];
+            updateFiltersUI();
         }
 
-        function updatePlaylistUI() {
-            const items = playlist.querySelectorAll('.playlist-item');
-            items.forEach((item, index) => {
-                item.classList.toggle('active', index === currentIndex);
-            });
-        }
-
-        function playPause() {
-            if (!currentMedia) return;
-            if (currentMedia.paused) {
-                currentMedia.play();
-            } else {
-                currentMedia.pause();
-            }
-        }
-
-        function skipBackward() {
-            if (!currentMedia) return;
-            currentMedia.currentTime = Math.max(0, currentMedia.currentTime - 10);
-        }
-
-        function skipForward() {
-            if (!currentMedia) return;
-            currentMedia.currentTime = Math.min(currentMedia.duration, currentMedia.currentTime + 10);
-        }
-
-        function toggleMute() {
-            if (!currentMedia) return;
-            currentMedia.muted = !currentMedia.muted;
-        }
-
-        function changeSpeed() {
-            if (!currentMedia) return;
-            const speed = document.getElementById('speedSelect').value;
-            currentMedia.playbackRate = parseFloat(speed);
-        }
-
-        function changeVolume() {
-            if (!currentMedia) return;
-            const volume = document.getElementById('volumeSlider').value;
-            currentMedia.volume = volume / 100;
-            document.getElementById('volumeValue').textContent = volume + '%';
-        }
-
-        // Keyboard shortcuts
-        document.addEventListener('keydown', (e) => {
-            if (!currentMedia) return;
-
-            switch (e.key) {
-                case ' ':
-                    e.preventDefault();
-                    playPause();
-                    break;
-                case 'ArrowLeft':
-                    skipBackward();
-                    break;
-                case 'ArrowRight':
-                    skipForward();
-                    break;
-                case 'm':
-                    toggleMute();
-                    break;
-            }
+        // --- File Logic ---
+        document.getElementById('file-input').addEventListener('change', (e) => {
+            const uploaded = Array.from(e.target.files).map(file => ({
+                id: Math.random().toString(36).substr(2, 9),
+                name: file.name,
+                url: URL.createObjectURL(file),
+                type: file.type.startsWith('video') ? 'video' : 'audio',
+                size: (file.size / (1024 * 1024)).toFixed(2) + ' MB'
+            }));
+            files = [...files, ...uploaded];
+            renderFileList();
+            showNotification(`تمت إضافة ${uploaded.length} ملفات جديدة`, 'success');
         });
+
+        function renderFileList() {
+            fileList.innerHTML = files.map((file, idx) => `
+                <div onclick="playFile(${idx})" class="group p-4 rounded-2xl cursor-pointer transition-all flex items-center gap-4 ${currentIndex === idx ? 'bg-indigo-600 shadow-xl' : 'bg-slate-900/50 hover:bg-slate-800'}">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center ${currentIndex === idx ? 'bg-white/20' : 'bg-slate-800'}">
+                        <i data-lucide="${file.type === 'video' ? 'video' : 'music'}" class="w-4 h-4 ${currentIndex === idx ? 'text-white' : 'text-slate-500'}"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-xs font-bold truncate ${currentIndex === idx ? 'text-white' : 'text-slate-300'}">${file.name}</p>
+                        <p class="text-[9px] uppercase tracking-widest ${currentIndex === idx ? 'text-indigo-200' : 'text-slate-600'}">${file.size}</p>
+                    </div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        async function playFile(index) {
+            currentIndex = index;
+            const file = files[index];
+            video.src = file.url;
+            
+            document.getElementById('empty-state').classList.add('hidden');
+            document.getElementById('player-container').classList.remove('hidden');
+            
+            if (file.type === 'video') {
+                video.classList.remove('hidden');
+                document.getElementById('audio-ui').classList.add('hidden');
+            } else {
+                video.classList.add('hidden');
+                document.getElementById('audio-ui').classList.remove('hidden');
+            }
+
+            await initAudio();
+            video.play();
+            isPlaying = true;
+            updatePlayBtn();
+            renderFileList();
+            startVisualizer();
+            startSilenceSkipLoop();
+        }
+
+        // --- Playback Controls ---
+        playBtn.onclick = () => {
+            if (!video.src) return;
+            if (isPlaying) video.pause(); else video.play();
+            isPlaying = !isPlaying;
+            updatePlayBtn();
+        };
+
+        // وظائف التقديم والتأخير 3 ثواني
+        rewindBtn.onclick = () => {
+            if (video.src) video.currentTime = Math.max(0, video.currentTime - 3);
+        };
+        forwardBtn.onclick = () => {
+            if (video.src) video.currentTime = Math.min(video.duration, video.currentTime + 3);
+        };
+
+        function updatePlayBtn() {
+            playBtn.innerHTML = isPlaying ? '<i data-lucide="pause" class="w-8 h-8 fill-current"></i>' : '<i data-lucide="play" class="w-8 h-8 fill-current ml-1"></i>';
+            document.getElementById('status-text').innerText = isPlaying ? "جاري معالجة الإشارة الحية" : "تم إيقاف المعالجة مؤقتاً";
+            document.getElementById('status-dot').className = `w-2 h-2 rounded-full ${isPlaying ? 'bg-indigo-500 shadow-[0_0_8px_#6366f1] animate-pulse' : 'bg-slate-700'}`;
+            lucide.createIcons();
+        }
+
+        speedSlider.oninput = (e) => {
+            playbackRate = parseFloat(e.target.value);
+            video.playbackRate = playbackRate;
+            // عرض السرعة برقمين بعد الفاصلة لدقة الكسور
+            document.getElementById('speed-val').innerText = playbackRate.toFixed(2) + 'x';
+        };
+
+        video.ontimeupdate = () => {
+            const pct = (video.currentTime / video.duration) * 100;
+            progressBar.style.width = pct + '%';
+            document.getElementById('time-current').innerText = formatTime(video.currentTime);
+            document.getElementById('time-duration').innerText = formatTime(video.duration);
+        };
+
+        document.getElementById('progress-container').onclick = (e) => {
+            if (!video.duration) return;
+            const rect = e.currentTarget.getBoundingClientRect();
+            video.currentTime = ((e.clientX - rect.left) / rect.width) * video.duration;
+        };
+
+        function formatTime(t) {
+            if (isNaN(t)) return "00:00";
+            const m = Math.floor(t / 60);
+            const s = Math.floor(t % 60);
+            return `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+        }
+
+        // --- Smart Silence Skipping (Mطور و Surgical) ---
+        function toggleSilenceSkip() {
+            isSkipSilenceEnabled = !isSkipSilenceEnabled;
+            const btn = document.getElementById('skip-btn');
+            const statusSpan = btn.querySelector('span');
+            btn.classList.toggle('bg-indigo-600', isSkipSilenceEnabled);
+            btn.classList.toggle('border-indigo-400/50', isSkipSilenceEnabled);
+            statusSpan.innerText = isSkipSilenceEnabled ? 'نشط الآن' : 'غير نشط';
+            statusSpan.className = isSkipSilenceEnabled ? 'text-white' : 'text-slate-400';
+            btn.querySelector('div').className = `w-3 h-3 rounded-full ${isSkipSilenceEnabled ? 'bg-white shadow-[0_0_10px_white]' : 'bg-slate-600'}`;
+        }
+
+        function startSilenceSkipLoop() {
+            let silenceTimer = 0;
+            const checkInterval = 20; 
+            const silenceThreshold = 8; 
+            const skipAmount = 0.05; 
+
+            setInterval(() => {
+                if (!isSkipSilenceEnabled || !isPlaying || !analyser) return;
+                const dataArray = new Uint8Array(analyser.frequencyBinCount);
+                analyser.getByteFrequencyData(dataArray);
+                const average = dataArray.reduce((a, b) => a + b) / dataArray.length;
+
+                if (average < silenceThreshold) {
+                    silenceTimer += checkInterval;
+                    if (silenceTimer > 100) {
+                        video.currentTime += skipAmount; 
+                        document.getElementById('skipping-badge').classList.remove('hidden');
+                        document.getElementById('visualizer-circle').classList.add('scale-105', 'border-indigo-500/50');
+                    }
+                } else {
+                    silenceTimer = 0;
+                    document.getElementById('skipping-badge').classList.add('hidden');
+                    document.getElementById('visualizer-circle').classList.remove('scale-105', 'border-indigo-500/50');
+                }
+            }, checkInterval);
+        }
+
+        // --- Audio Visualizer ---
+        function startVisualizer() {
+            function draw() {
+                requestAnimationFrame(draw);
+                if (!analyser) return;
+                const bufferLength = analyser.frequencyBinCount;
+                const dataArray = new Uint8Array(bufferLength);
+                analyser.getByteFrequencyData(dataArray);
+
+                canvas.width = canvas.offsetWidth;
+                canvas.height = canvas.offsetHeight;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                const barWidth = (canvas.width / bufferLength) * 2;
+                let x = 0;
+                for (let i = 0; i < bufferLength; i++) {
+                    const barHeight = (dataArray[i] / 255) * canvas.height;
+                    const gradient = ctx.createLinearGradient(0, canvas.height, 0, 0);
+                    gradient.addColorStop(0, '#6366f1');
+                    gradient.addColorStop(1, '#c084fc');
+                    ctx.fillStyle = gradient;
+                    ctx.fillRect(x, canvas.height - barHeight, barWidth - 1, barHeight);
+                    x += barWidth;
+                }
+            }
+            draw();
+        }
+
+        // --- Screen Recording Logic ---
+        document.getElementById('record-btn').onclick = async () => {
+            if (isRecording) {
+                mediaRecorder.stop();
+                return;
+            }
+            try {
+                const screenStream = await navigator.mediaDevices.getDisplayMedia({ video: { cursor: "always" } });
+                const audioTrack = streamDest.stream.getAudioTracks()[0];
+                const combined = new MediaStream([...screenStream.getVideoTracks(), audioTrack]);
+
+                mediaRecorder = new MediaRecorder(combined, { mimeType: 'video/webm' });
+                let chunks = [];
+                mediaRecorder.ondataavailable = e => chunks.push(e.data);
+                mediaRecorder.onstop = () => {
+                    const blob = new Blob(chunks, { type: 'video/mp4' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `STUDIO_PRO_RECORD_${Date.now()}.mp4`;
+                    a.click();
+                    screenStream.getTracks().forEach(t => t.stop());
+                    isRecording = false;
+                    updateRecordBtn();
+                    showNotification("تم حفظ التسجيل بنجاح في مجلد التنزيلات", "success");
+                };
+                mediaRecorder.start();
+                isRecording = true;
+                updateRecordBtn();
+                showNotification("بدأ تسجيل الشاشة مع دمج الصوت المصفى", "success");
+            } catch (err) {
+                showNotification("فشل التسجيل: تأكد من منح الأذونات اللازمة للمتصفح.");
+            }
+        };
+
+        function updateRecordBtn() {
+            const btn = document.getElementById('record-btn');
+            btn.innerHTML = isRecording ? '<i data-lucide="square" class="w-5 h-5"></i> إيقاف التسجيل' : '<i data-lucide="video" class="w-5 h-5"></i> تسجيل الشاشة المفلتر';
+            btn.className = isRecording ? 'w-full py-4 rounded-2xl bg-rose-600 animate-pulse flex items-center justify-center gap-3 font-bold text-sm text-white' : 'btn-primary w-full py-4 rounded-2xl flex items-center justify-center gap-3 font-bold text-sm text-white';
+            lucide.createIcons();
+        }
+
+        // --- Notification System ---
+        function showNotification(msg, type = 'error') {
+            const el = document.getElementById('notification');
+            const text = document.getElementById('notification-text');
+            text.innerText = msg;
+            el.classList.remove('opacity-0', 'pointer-events-none', '-translate-y-4');
+            el.classList.add('opacity-100', 'translate-y-0');
+            setTimeout(hideNotification, 5000);
+        }
+
+        function hideNotification() {
+            const el = document.getElementById('notification');
+            el.classList.add('opacity-0', 'pointer-events-none', '-translate-y-4');
+            el.classList.remove('opacity-100', 'translate-y-0');
+        }
     </script>
 </body>
-
 </html>
